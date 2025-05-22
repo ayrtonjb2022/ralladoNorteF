@@ -10,8 +10,8 @@ function App() {
     <Router>
       <Routes>
         {/* Rutas públicas */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="./login" element={<Login />} />
+        <Route path="./register" element={<Register />} />
 
         {/* Rutas privadas */}
         <Route element={<PrivateRoute />}>
