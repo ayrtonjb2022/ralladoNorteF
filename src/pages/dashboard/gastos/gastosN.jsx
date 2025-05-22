@@ -1,5 +1,6 @@
 import { FaPlusCircle } from "react-icons/fa";
 import { FiEdit, FiTrash2, FiUserPlus } from "react-icons/fi";
+import { format } from "@formkit/tempo";
 
 import { useState, useEffect } from "react";
 import { getMovimiento, descargarReportePDF, newMovimiento, getCajas, delMovimiento } from '../../../api/apiNegocio.js';
@@ -185,7 +186,7 @@ export default function Gasto() {
             <tbody>
               {gastos.map((g) => (
                 <tr key={g.id} className="hover:bg-gray-50">
-                  <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{g.fecha || '-'}</td>
+                  <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{format(g.fecha) || '-'}</td>
                   <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{g.descripcion}</td>
                   <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{g.categoria || '-'}</td>
                   <td className="border-b border-gray-200 px-4 py-2 text-right text-red-600 font-semibold">${Number(g.monto).toFixed(2)}</td>

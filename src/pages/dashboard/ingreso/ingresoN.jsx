@@ -1,6 +1,6 @@
 import { FaPlusCircle } from "react-icons/fa";
 import { FiEdit, FiTrash2, FiUserPlus } from "react-icons/fi";
-
+import { format } from "@formkit/tempo";
 import { useState, useEffect } from "react";
 import { getMovimiento, descargarReportePDF, newMovimiento, getCajas, delMovimiento } from '../../../api/apiNegocio.js';
 import ModalMovimientos from '../../../components/modal/movimientoM.jsx';
@@ -253,7 +253,7 @@ export default function Ingreso() {
             <tbody>
               {ingresos.map((ing, index) => (
   <tr key={index} className="hover:bg-gray-50">
-    <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{ing.fecha || '-'}</td>
+    <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{format(ing.fecha) || '-'}</td>
     <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{ing.descripcion}</td>
     <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{ing.categoria || '-'}</td>
     <td className="border-b border-gray-200 px-4 py-2 text-right text-green-600 font-semibold">
