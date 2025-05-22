@@ -1,3 +1,4 @@
+// Mismo import que tú usaste
 import { useState, useEffect } from "react";
 import {
   FaCashRegister,
@@ -8,8 +9,7 @@ import {
   FaCog,
   FaSpinner,
 } from "react-icons/fa";
-import { format } from "@formkit/tempo"
-//importamos el logo .png
+import { format } from "@formkit/tempo";
 import logo from "../../assets/logo.png";
 import Ingreso from "./ingreso/ingresoN.jsx";
 import Caja from "./caja/cajaN.jsx";
@@ -17,7 +17,6 @@ import Gastos from "./gastos/gastosN.jsx";
 import Analisis from "./analisis/analisisN.jsx";
 import Clientes from "./clientes/clientesN.jsx";
 import UserProfile from "./Profile/UserProfile.jsx";
-
 import { getCajas } from "../../api/apiNegocio.js";
 
 export default function Dashboard() {
@@ -26,32 +25,22 @@ export default function Dashboard() {
   const [stateCajas, setStateCajas] = useState(true);
 
   const buttons = [
-    { label: "Caja", icon: <FaCashRegister className="text-3xl text-white" />, color: "bg-blue-600" },
-    { label: "Ingresos", icon: <FaMoneyBillWave className="text-3xl text-white" />, color: "bg-green-600" },
-    { label: "Gastos", icon: <FaMoneyCheckAlt className="text-3xl text-white" />, color: "bg-red-600" },
-    { label: "Análisis", icon: <FaChartBar className="text-3xl text-white" />, color: "bg-purple-600" },
-    { label: "Clientes", icon: <FaUser className="text-3xl text-white" />, color: "bg-teal-600" },
-    { label: "Perfil", icon: <FaCog className="text-3xl text-white" />, color: "bg-gray-600" },
+    { label: "Caja", icon: <FaCashRegister />, color: "bg-blue-500" },
+    { label: "Ingresos", icon: <FaMoneyBillWave />, color: "bg-emerald-500" },
+    { label: "Gastos", icon: <FaMoneyCheckAlt />, color: "bg-rose-500" },
+    { label: "Análisis", icon: <FaChartBar />, color: "bg-indigo-500" },
+    { label: "Clientes", icon: <FaUser />, color: "bg-teal-500" },
+    { label: "Perfil", icon: <FaCog />, color: "bg-gray-500" },
   ];
 
   useEffect(() => {
     const cargarCajas = async () => {
       try {
         const cajasData = await getCajas();
-
         const fechaHoy = format(new Date(), "short");
-        console.log(cajasData);
-
-        const existeCajaDelDiaAbierta = cajasData.some((caja) => {
-          const fechaCaja = format(caja.fecha, "short");
-          console.log("Fecha Caja:", fechaCaja);
-          console.log("Fecha Hoy:", fechaHoy);
-          return (
-            fechaCaja === fechaHoy
-          );
-        }
+        const existeCajaDelDiaAbierta = cajasData.some((caja) =>
+          format(caja.fecha, "short") === fechaHoy
         );
-        console.log(existeCajaDelDiaAbierta);
         setStateCajas(existeCajaDelDiaAbierta);
         setComponenteActivo(existeCajaDelDiaAbierta ? null : "Caja");
       } catch (error) {
@@ -85,68 +74,58 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <div className="flex flex-col items-center gap-6">
-          <FaSpinner className="text-6xl text-blue-600 animate-spin" />
-          <img src={logo} alt="Logo" className="w-28 h-28 object-contain" />
-          <p className="text-gray-600 text-lg font-medium">Cargando datos...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
+        <FaSpinner className="text-6xl text-blue-500 animate-spin mb-4" />
+        <img src={logo} alt="Logo" className="w-28 h-28 object-contain mb-2" />
+        <p className="text-gray-700 text-lg font-medium">Cargando datos...</p>
       </div>
     );
   }
 
-
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-white px-6 py-4">
       {/* Encabezado */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="hidden sm:block text-3xl font-bold mb-4 text-gray-800">Dashboard</h1>
-        <div className="flex space-x-4 items-center gap">
+        <h1 className="hidden sm:block text-3xl font-bold text-gray-800">
+          Dashboard
+        </h1>
+        <div className="flex gap-4">
           {buttons.slice(-2).map((btn) => (
             <button
               key={btn.label}
               onClick={() => setComponenteActivo(btn.label)}
-              className={`rounded-full flex items-center justify-center transition-transform hover:scale-105 ${btn.color}`}
-              style={{ width: "60px", height: "60px" }}
+              className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white text-2xl shadow-md hover:scale-110 transition-transform duration-200 ${btn.color}`}
             >
-              <span className="text-4xl">{btn.icon}</span>
+              {btn.icon}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Botones principales: solo si la caja está abierta */}
+      {/* Botones principales */}
       {stateCajas && (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
           {buttons.slice(0, 4).map((btn) => (
             <button
               key={btn.label}
               onClick={() => setComponenteActivo(btn.label)}
-              className={`rounded-xl sm:rounded-2xl shadow-md sm:shadow-lg p-4 sm:p-6 flex flex-col items-center justify-center transition-transform hover:scale-105 ${btn.color}`}
+              className={`p-5 rounded-2xl shadow-md backdrop-blur-sm bg-opacity-80 text-white hover:shadow-lg hover:scale-105 transition-all duration-200 flex flex-col items-center justify-center ${btn.color}`}
             >
-              {btn.icon}
-              <span className="text-white mt-2 sm:mt-3 text-base sm:text-xl font-semibold text-center">
-                {btn.label}
-              </span>
+              <span className="text-3xl mb-2">{btn.icon}</span>
+              <span className="text-lg font-semibold">{btn.label}</span>
             </button>
           ))}
         </div>
       )}
 
+      {/* Separador con logo */}
       <div className="flex items-center justify-center gap-4 my-6">
-        <div className="flex-1 h-px bg-gray-300"></div>
-
-        <img
-          src={logo}
-          alt="Logo"
-          className="w-8 h-8 object-contain"
-        />
-
-        <div className="flex-1 h-px bg-gray-300"></div>
+        <div className="flex-1 h-px bg-gray-300" />
+        <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
+        <div className="flex-1 h-px bg-gray-300" />
       </div>
 
-
-      {/* Componente dinámico */}
+      {/* Contenido dinámico */}
       <div className="mt-6">{renderComponenteActivo()}</div>
     </div>
   );

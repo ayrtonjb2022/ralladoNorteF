@@ -1,6 +1,8 @@
 import { FaPlusCircle } from "react-icons/fa";
+import { FiEdit, FiTrash2, FiUserPlus } from "react-icons/fi";
+
 import { useState, useEffect } from "react";
-import { getMovimiento, descargarReportePDF, newMovimiento, getCajas } from '../../../api/apiNegocio.js';
+import { getMovimiento, descargarReportePDF, newMovimiento, getCajas, delMovimiento } from '../../../api/apiNegocio.js';
 import ModalMovimientos from '../../../components/modal/movimientoM.jsx';
 import Message from "../../../components/modal/Message.jsx";
 
@@ -12,6 +14,9 @@ export default function Gasto() {
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [typeMessage, setTypeMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
   useEffect(() => {
     const fetchGastos = async () => {
       try {
@@ -106,8 +111,41 @@ export default function Gasto() {
     }
   };
 
+
+  // Eliminar movimiento
+
+  const handleEliminar = async (id) => {
+    setLoading(true);
+    try {
+      await delMovimiento(id);
+      setGastos(gastos.filter((gasto) => gasto.id !== id));
+      setMessage("Movimiento eliminado exitosamente");
+      setTypeMessage("success");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
+    } catch (error) {
+      console.error('Error al eliminar el movimiento:', error);
+      setMessage("Error al eliminar el movimiento");
+      setTypeMessage("error");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const handleConfirmarEliminar = () => {
+    setLoading(true);
+    handleEliminar(idToDelete);
+    setShowDeleteModal(false);
+  };
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className={`min-h-screen bg-gray-100 p-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Gastos</h1>
         <button
@@ -141,6 +179,7 @@ export default function Gasto() {
                 <th className="border-b border-gray-300 px-4 py-2 text-left text-gray-700">Descripción</th>
                 <th className="border-b border-gray-300 px-4 py-2 text-left text-gray-700">Categoría</th>
                 <th className="border-b border-gray-300 px-4 py-2 text-right text-gray-700">Monto</th>
+                <th className="border-b border-gray-300 px-4 py-2 text-right text-gray-700">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -150,6 +189,19 @@ export default function Gasto() {
                   <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{g.descripcion}</td>
                   <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{g.categoria || '-'}</td>
                   <td className="border-b border-gray-200 px-4 py-2 text-right text-red-600 font-semibold">${Number(g.monto).toFixed(2)}</td>
+
+                  <td className="border-b border-gray-200 px-4 py-2 text-center">
+                    <button
+                      onClick={() => {
+                        setIdToDelete(g.id);
+                        setShowDeleteModal(true);
+                      }}
+                      className="text-red-600 hover:text-red-800"
+                      title="Eliminar"
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -163,6 +215,30 @@ export default function Gasto() {
             type={"gasto"}
           />
         )}
+
+        {showDeleteModal && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="text-lg font-semibold mb-4">¿Estás seguro de eliminar este ingreso?</h2>
+              <div className="flex justify-end gap-4">
+                <button
+
+                  onClick={() => setShowDeleteModal(false)}
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmarEliminar}
+                  className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {total > 0 && (
           <div className="mt-6 flex items-center gap-4">
             <input
