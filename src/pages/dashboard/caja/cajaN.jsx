@@ -1,7 +1,9 @@
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash,  FaSpinner,
+ } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { getCajas, newCaja, upDateCaja } from "../../../api/apiNegocio.js";
 import ModalCrearCaja from "../../../components/modal/modalCaja.jsx";
+import logo from "../../../assets/logo.png";
 
 export default function Caja() {
     const [cajas, setCajas] = useState([]);
@@ -10,6 +12,7 @@ export default function Caja() {
     const [cajaId, setCajaId] = useState(null);
     const [ingresoInicial, setIngresoInicial] = useState(0);
     const [ingresoFinal, setIngresoFinal] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const cargarCajas = async () => {
@@ -38,12 +41,22 @@ export default function Caja() {
         };
 
         cargarCajas();
+        setLoading(false);
     }, []);
 
     const cajadatos = async (caja) => {
-        await newCaja(caja);
+        try {
+            setLoading(true);
+await newCaja(caja);
         const nuevasCajas = await getCajas();
         setCajas(nuevasCajas);
+        //recargar
+        window.location.reload();
+        } catch (error) {
+            console.error("Error al crear caja:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const totalCajas = cajas.reduce((acc, c) => acc + Number(c.saldo_final), 0);
@@ -69,6 +82,18 @@ export default function Caja() {
         setCajas(nuevasCajas);
         setModalCajaUpdate(false);
     };
+
+    if (loading) {
+        return (
+          <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+            <div className="flex flex-col items-center gap-6">
+              <FaSpinner className="text-6xl text-blue-600 animate-spin" />
+              <img src={logo} alt="Logo" className="w-28 h-28 object-contain" />
+              <p className="text-gray-600 text-lg font-medium">Cargando datos...</p>
+            </div>
+          </div>
+        );
+      }
 
     return (
         <div className="min-h-screen bg-gray-100 p-6">
