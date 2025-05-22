@@ -1,6 +1,8 @@
 import { FaPlusCircle } from "react-icons/fa";
+import { FiEdit, FiTrash2, FiUserPlus } from "react-icons/fi";
+
 import { useState, useEffect } from "react";
-import { getMovimiento, descargarReportePDF, newMovimiento, getCajas } from '../../../api/apiNegocio.js';
+import { getMovimiento, descargarReportePDF, newMovimiento, getCajas, delMovimiento } from '../../../api/apiNegocio.js';
 import ModalMovimientos from '../../../components/modal/movimientoM.jsx';
 import Message from "../../../components/modal/Message.jsx";
 
@@ -11,9 +13,9 @@ export default function Ingreso() {
   const [message, setMessage] = useState("");
   const [typeMessage, setTypeMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
-
-
-
+  const [loading, setLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
 
   // % de ganancia que se pone al precio de venta
   const [gananciaPorcentaje, setGananciaPorcentaje] = useState(0);
@@ -128,11 +130,44 @@ export default function Ingreso() {
     }
   };
 
+  // Eliminar movimiento
+
+  const handleEliminar = async (id) => {
+    setLoading(true);
+    try {
+      await delMovimiento(id);
+      setIngresos(ingresos.filter((ingreso) => ingreso.id !== id));
+      setMessage("Movimiento eliminado exitosamente");
+      setTypeMessage("success");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
+    } catch (error) {
+      console.error('Error al eliminar el movimiento:', error);
+      setMessage("Error al eliminar el movimiento");
+      setTypeMessage("error");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const handleConfirmarEliminar = () => {
+    setLoading(true);
+    handleEliminar(idToDelete);
+    setShowDeleteModal(false);
+  };
+
 
 
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className={`min-h-screen bg-gray-100 p-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Ingresos</h1>
         <button
@@ -151,6 +186,29 @@ export default function Ingreso() {
         message={message}
         type={typeMessage}
       />
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">¿Estás seguro de eliminar este ingreso?</h2>
+            <div className="flex justify-end gap-4">
+              <button
+                
+                onClick={() => setShowDeleteModal(false)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmarEliminar}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
       <div className="bg-white p-4 rounded-xl shadow mb-6">
@@ -189,18 +247,35 @@ export default function Ingreso() {
                 <th className="border-b border-gray-300 px-4 py-2 text-left text-gray-700">Descripción</th>
                 <th className="border-b border-gray-300 px-4 py-2 text-left text-gray-700">Categoría</th>
                 <th className="border-b border-gray-300 px-4 py-2 text-right text-gray-700">Monto</th>
+                <th className="border-b border-gray-300 px-4 py-2 text-center text-gray-700">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {ingresos.map((ing, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{ing.fecha || '-'}</td>
-                  <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{ing.descripcion}</td>
-                  <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{ing.categoria || '-'}</td>
-                  <td className="border-b border-gray-200 px-4 py-2 text-right text-green-600 font-semibold">${Number(ing.monto).toFixed(2)}</td>
-                </tr>
-              ))}
+  <tr key={index} className="hover:bg-gray-50">
+    <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{ing.fecha || '-'}</td>
+    <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{ing.descripcion}</td>
+    <td className="border-b border-gray-200 px-4 py-2 text-gray-800">{ing.categoria || '-'}</td>
+    <td className="border-b border-gray-200 px-4 py-2 text-right text-green-600 font-semibold">
+      ${Number(ing.monto).toFixed(2)}
+    </td>
+    <td className="border-b border-gray-200 px-4 py-2 text-center">
+      <button
+        onClick={() => {
+          setIdToDelete(ing.id);
+          setShowDeleteModal(true);
+        }}
+        className="text-red-600 hover:text-red-800"
+        title="Eliminar"
+      >
+        <FiTrash2 />
+      </button>
+    </td>
+  </tr>
+))}
+
             </tbody>
+
           </table>
         </div>
 

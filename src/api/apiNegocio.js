@@ -203,3 +203,17 @@ export const upDatePassword = async (data) => {
     throw error;
   }
 }
+
+export const delMovimiento = async (id) => {
+  console.log(id);
+  
+  try {
+    const response = await api.delete(`/movimiento/${id}`);
+    console.log(response);
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error al eliminar movimiento:', error);
+    throw error;
+  }
+}

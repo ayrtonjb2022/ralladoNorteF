@@ -11,6 +11,7 @@ export default function Login() {
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState('');
   const [typeMessage, setTypeMessage] = useState('success');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const togglePassword = () => setShowPassword(!showPassword);
@@ -20,6 +21,7 @@ export default function Login() {
   };
 
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       const response = await login(form);
@@ -36,6 +38,8 @@ export default function Login() {
       setMessage('Error al iniciar sesión. Verifica tus credenciales.');
       setTypeMessage('error');
       setShowMessage(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,7 +56,7 @@ export default function Login() {
           type={typeMessage}
         />
 
-        <form onSubmit={handleSubmit} className="space-y-5 mt-4">
+        <form onSubmit={handleSubmit} className={`space-y-5 mt-4 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
           <div className="flex items-center border rounded-xl px-4 py-2 shadow-sm focus-within:ring-2 ring-blue-400">
             <FaUser className="text-gray-400 mr-2" />
             <input
@@ -90,9 +94,9 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="mt-4 text-sm text-center text-gray-500">
+        {/* <div className="mt-4 text-sm text-center text-gray-500">
           ¿No tienes cuenta? <a href="./register" className="text-blue-600 hover:underline">Regístrate</a>
-        </div>
+        </div> */}
       </div>
     </div>
   );
