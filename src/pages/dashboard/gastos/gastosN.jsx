@@ -6,7 +6,6 @@ import ModalMovimientos from '../../../components/modal/movimientoM.jsx';
 export default function Gasto() {
   const [gastos, setGastos] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [gananciaPorcentaje, setGananciaPorcentaje] = useState(0); // puedes quitar esto si no se calcula costo/ganancia en gastos
   const [idCaja, setIdCaja] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
 
@@ -76,16 +75,17 @@ export default function Gasto() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Gastos</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl shadow hover:bg-red-700 transition"
-        >
-          <FaPlusCircle className="text-xl" />
-          Nuevo gasto
-        </button>
-      </div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+  <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Gastos</h1>
+  <button
+    onClick={() => setShowModal(true)}
+    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl shadow hover:bg-red-700 transition"
+  >
+    <FaPlusCircle className="text-xl" />
+    Nuevo gasto
+  </button>
+</div>
+
 
       <div className="bg-white p-4 rounded-xl shadow mb-6">
         <h2 className="text-xl font-semibold text-gray-700">Total de gastos</h2>

@@ -60,15 +60,16 @@ export default function Clientes() {
         <ModalCliente onClose={() => setModalOpen(false)} />
       )}
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Clientes</h1>
-        <button
-          onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-        >
-          <FiUserPlus /> Nuevo Cliente
-        </button>
-      </div>
+     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+  <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Clientes</h1>
+  <button
+    onClick={() => setModalOpen(true)}
+    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+  >
+    <FiUserPlus /> Nuevo Cliente
+  </button>
+</div>
+
 
       <div className="bg-white rounded-xl shadow p-4 overflow-x-auto">
         <table className="min-w-full text-left text-sm">

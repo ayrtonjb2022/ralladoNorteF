@@ -111,16 +111,17 @@ export default function Ingreso() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Ingresos</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition"
-        >
-          <FaPlusCircle className="text-xl" />
-          Nuevo ingreso
-        </button>
-      </div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+  <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Ingresos</h1>
+  <button
+    onClick={() => setShowModal(true)}
+    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition"
+  >
+    <FaPlusCircle className="text-xl" />
+    Nuevo ingreso
+  </button>
+</div>
+
 
       <div className="bg-white p-4 rounded-xl shadow mb-6">
   <h2 className="text-xl font-semibold text-gray-700">Total de ingresos</h2>
