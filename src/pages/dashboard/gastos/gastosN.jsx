@@ -2,13 +2,16 @@ import { FaPlusCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { getMovimiento, descargarReportePDF, newMovimiento, getCajas } from '../../../api/apiNegocio.js';
 import ModalMovimientos from '../../../components/modal/movimientoM.jsx';
+import Message from "../../../components/modal/Message.jsx";
 
 export default function Gasto() {
   const [gastos, setGastos] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [idCaja, setIdCaja] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
-
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [typeMessage, setTypeMessage] = useState("");
   useEffect(() => {
     const fetchGastos = async () => {
       try {
@@ -20,6 +23,13 @@ export default function Gasto() {
         setIdCaja(ultimaCaja[ultimaCaja.length - 1].id);
       } catch (error) {
         console.error('Error al obtener los gastos:', error);
+        setMessage("Error al obtener los gastos");
+        setTypeMessage("error");
+        setShowMessage(true);
+        setTimeout(() => {
+          setShowMessage(false);
+          window.location.reload();
+        }, 3000); // Ocultar el mensaje después de 3 segundos
       }
     };
 
@@ -47,10 +57,22 @@ export default function Gasto() {
     };
 
     try {
-      const response = await newMovimiento(newData);
-      console.log('Gasto creado:', response);
+      await newMovimiento(newData);
+      setMessage("Gasto creado exitosamente");
+      setTypeMessage("success");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
     } catch (error) {
       console.error('Error al crear el gasto:', error);
+      setMessage("Error al crear el gasto");
+      setTypeMessage("error");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+        window.location.reload();
+      }, 3000); // Ocultar el mensaje después de 3 segundos
     }
 
     setGastos([...gastos, nuevo]);
@@ -67,25 +89,42 @@ export default function Gasto() {
     const tipo = "gasto";
     try {
       await descargarReportePDF(fechaInicio, tipo);
-      alert('Descarga iniciada');
+      setMessage("Reporte generado exitosamente");
+      setTypeMessage("success");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
     } catch (error) {
-      alert('Error al descargar el PDF', error);
+      setMessage("Error al descargar el PDF");
+      setTypeMessage("error");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+        window.location.reload();
+      }, 3000); // Ocultar el mensaje después de 3 segundos
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-  <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Gastos</h1>
-  <button
-    onClick={() => setShowModal(true)}
-    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl shadow hover:bg-red-700 transition"
-  >
-    <FaPlusCircle className="text-xl" />
-    Nuevo gasto
-  </button>
-</div>
-
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Gastos</h1>
+        <button
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl shadow hover:bg-red-700 transition"
+        >
+          <FaPlusCircle className="text-xl" />
+          Nuevo gasto
+        </button>
+      </div>
+      {/* Mensaje arriba del formulario */}
+      <Message
+        isOpen={showMessage}
+        onClose={() => setShowMessage(false)}
+        message={message}
+        type={typeMessage}
+      />
 
       <div className="bg-white p-4 rounded-xl shadow mb-6">
         <h2 className="text-xl font-semibold text-gray-700">Total de gastos</h2>

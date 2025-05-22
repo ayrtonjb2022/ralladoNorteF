@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { FiEdit, FiTrash2, FiUserPlus } from "react-icons/fi";
 import { getClientes, upDateCliente, deleteCliente } from '../../../api/apiNegocio.js';
 import ModalCliente from '../../../components/modal/ModalCliente.jsx';
+//mensaje
+import Message from "../../../components/modal/Message.jsx";
 
 export default function Clientes() {
   const [clientes, setClientes] = useState([]);
@@ -16,7 +18,9 @@ export default function Clientes() {
     direccion_cliente: "",
     contacto_cliente: "",
   });
-
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [typeMessage, setTypeMessage] = useState("");
   useEffect(() => {
     const fetchClientes = async () => {
       const data = await getClientes();
@@ -30,23 +34,62 @@ export default function Clientes() {
     setFormEdit(cliente);
   };
 
-  const guardarEdicion = () => {
-    const nuevos = clientes.map((c) =>
-      c.id === formEdit.id ? formEdit : c
-    );
-    setClientes(nuevos);
-    setClienteEditar(null);
-    upDateCliente(formEdit.id, formEdit); // Llamada a API
+  const guardarEdicion = async () => {
+    try {
+      const nuevos = clientes.map((c) =>
+        c.id === formEdit.id ? formEdit : c
+      );
+      setClientes(nuevos);
+      setClienteEditar(null);
+      await upDateCliente(formEdit.id, formEdit); // Llamada a API
+      setMessage("Cliente actualizado correctamente");
+      setTypeMessage("success");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
+      setFormEdit({
+        id: null,
+        nombre_cliente: "",
+        apellido_cliente: "",
+        direccion_cliente: "",
+        contacto_cliente: "",
+      });
+    } catch (error) {
+      setMessage("Error al actualizar el cliente");
+      setTypeMessage("error");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
+    }
   };
 
   const handleEliminar = (cliente) => {
     setClienteEliminar(cliente);
   };
 
-  const confirmarEliminacion = () => {
-    setClientes(clientes.filter((c) => c.id !== clienteEliminar.id));
-    deleteCliente(clienteEliminar.id); 
-    setClienteEliminar(null);
+  const confirmarEliminacion = async () => {
+    try {
+      setClientes(clientes.filter((c) => c.id !== clienteEliminar.id));
+      await deleteCliente(clienteEliminar.id);
+      setClienteEliminar(null);
+      setMessage("Cliente eliminado correctamente");
+      setTypeMessage("success");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+        window.location.reload();
+      }, 3000); // Ocultar el mensaje después de 3 segundos
+
+    } catch (error) {
+      setMessage("Error al eliminar el cliente Revise los registros");
+      setTypeMessage("error");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
+    }
   };
 
   const cancelar = () => {
@@ -60,15 +103,23 @@ export default function Clientes() {
         <ModalCliente onClose={() => setModalOpen(false)} />
       )}
 
-     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-  <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Clientes</h1>
-  <button
-    onClick={() => setModalOpen(true)}
-    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-  >
-    <FiUserPlus /> Nuevo Cliente
-  </button>
-</div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Clientes</h1>
+        <button
+          onClick={() => setModalOpen(true)}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+        >
+          <FiUserPlus /> Nuevo Cliente
+        </button>
+      </div>
+
+      {/* Mensaje arriba del formulario */}
+      <Message
+        isOpen={showMessage}
+        onClose={() => setShowMessage(false)}
+        message={message}
+        type={typeMessage}
+      />
 
 
       <div className="bg-white rounded-xl shadow p-4 overflow-x-auto">

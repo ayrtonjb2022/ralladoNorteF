@@ -115,6 +115,7 @@ export const newMovimiento = async (data) => {
 export const newCaja = async (data) => {
   try {
     if (!data || Object.keys(data).length === 0)  throw new Error('No se proporcionaron datos para crear la caja.');
+    console.log(data);
     
     const response = await api.post('/cajas', data);
     return response.data;

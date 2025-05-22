@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaKey } from "react-icons/fa"; // NUEVO
-import { userUpdate, deleteUser, upDatePassword ,getUsuario} from "../../../api/apiNegocio.js";
+import { userUpdate, deleteUser, upDatePassword, getUsuario } from "../../../api/apiNegocio.js";
 import Message from "../../../components/modal/Message.jsx";
 import { useNavigate } from "react-router-dom"; // NUEVO
 
@@ -27,7 +27,7 @@ export default function UserProfile() {
       try {
         const userData = await getUsuario();
         console.log("userData", userData);
-        
+
         setUser(userData.user);
         setForm(userData.user);
       } catch (error) {
@@ -90,7 +90,7 @@ export default function UserProfile() {
 
   const updatePassword = async () => {
     try {
-      await upDatePassword(passwordData); 
+      await upDatePassword(passwordData);
       alert("Contraseña actualizada correctamente");
       setShowPasswordModal(false);
       setPasswordData({ oldPassword: "", newPassword: "" });
@@ -113,15 +113,15 @@ export default function UserProfile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-sky-100 to-indigo-100 flex items-center justify-center px-4">
-      
+
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-sm w-full text-center">
         {/* Mensaje arriba del formulario */}
-              <Message
-                isOpen={showMessage}
-                onClose={() => setShowMessage(false)}
-                message={message}
-                type={typeMessage}
-              />
+        <Message
+          isOpen={showMessage}
+          onClose={() => setShowMessage(false)}
+          message={message}
+          type={typeMessage}
+        />
         <img
           className="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-indigo-500 object-cover"
           src={`https://ui-avatars.com/api/?name=${user.nombre}+${user.apellido}`}

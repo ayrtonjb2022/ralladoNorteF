@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import {newCliente} from "../../api/apiNegocio.js";
-
+import Message from "../../components/modal/Message.jsx";
 export default function ModalCliente() {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -11,21 +11,48 @@ export default function ModalCliente() {
     contacto_cliente: "",
   });
 
+    const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [typeMessage, setTypeMessage] = useState("");
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleGuardar = async() => {
-    console.log("Datos del cliente:", formData);
+    try {
+      console.log("Datos del cliente:", formData);
     setIsOpen(false);
     // Aquí puedes agregar la lógica para guardar el cliente
     await newCliente(formData);
     //recargar pagina
     window.location.reload();
+    setMessage("Cliente registrado correctamente");
+    setTypeMessage("success");
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 3000); // Ocultar el mensaje después de 3 segundos
+    } catch (error) {
+      console.error("Error al registrar el cliente:", error);
+      setMessage("Error al registrar el cliente");
+      setTypeMessage("error");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
+    }
   };
 
   return (
     <>
+     {/* Mensaje arriba del formulario */}
+          <Message
+            isOpen={showMessage}
+            onClose={() => setShowMessage(false)}
+            message={message}
+            type={typeMessage}
+          />
       {/* Botón para abrir modal */}
       <button
         onClick={() => setIsOpen(true)}

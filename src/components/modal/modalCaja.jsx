@@ -16,8 +16,7 @@ const ModalCrearCaja = ({ isOpen, onClose, onCreate }) => {
   const handleCreate = () => {
     onCreate({ saldo_inicial:saldoInicial });
     onClose();
-    //recargar pagina
-    window.location.reload();
+
   };
 
   return (

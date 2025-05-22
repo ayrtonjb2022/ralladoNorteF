@@ -1,12 +1,15 @@
 import { FaPlusCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
-import { getMovimiento, descargarReportePDF, newMovimiento,getCajas } from '../../../api/apiNegocio.js';
+import { getMovimiento, descargarReportePDF, newMovimiento, getCajas } from '../../../api/apiNegocio.js';
 import ModalMovimientos from '../../../components/modal/movimientoM.jsx';
+import Message from "../../../components/modal/Message.jsx";
 
 
 export default function Ingreso() {
   const [ingresos, setIngresos] = useState([]);
-
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [typeMessage, setTypeMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
 
 
@@ -18,8 +21,8 @@ export default function Ingreso() {
   useEffect(() => {
     const fetchIngresos = async () => {
       try {
-        
-        
+
+
         const response = await getMovimiento();
         const ingresosFiltrados = response.filter((ingreso) => ingreso.tipo === 'ingreso');
         if (ingresosFiltrados.length < 0) {
@@ -28,15 +31,22 @@ export default function Ingreso() {
         }
         setIngresos(ingresosFiltrados || []);
 
-        
-          const ultimaCaja = await getCajas()
-          console.log(ultimaCaja[ultimaCaja.length - 1].id);
-          setIdCaja(ultimaCaja[ultimaCaja.length - 1].id)
-         
+
+        const ultimaCaja = await getCajas()
+        console.log(ultimaCaja[ultimaCaja.length - 1].id);
+        setIdCaja(ultimaCaja[ultimaCaja.length - 1].id)
+
 
 
       } catch (error) {
         console.error('Error al obtener los ingresos:', error);
+        setMessage("Error al obtener los ingresos");
+        setTypeMessage("error");
+        setShowMessage(true);
+        setTimeout(() => {
+          setShowMessage(false);
+          window.location.reload();
+        }, 3000); // Ocultar el mensaje después de 3 segundos
       }
     };
 
@@ -64,14 +74,26 @@ export default function Ingreso() {
     };
 
     console.log("newData", movimiento.kilosV);
-    
-    
+
+
 
     try {
       const response = await newMovimiento(newData);
       console.log('Movimiento creado:', response);
+      setMessage("Movimiento creado exitosamente");
+      setTypeMessage("success");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
     } catch (error) {
       console.error('Error al crear el movimiento:', error);
+      setMessage("Error al crear el movimiento");
+      setTypeMessage("error");
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 3000); // Ocultar el mensaje después de 3 segundos
     }
 
 
@@ -112,41 +134,49 @@ export default function Ingreso() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-  <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Ingresos</h1>
-  <button
-    onClick={() => setShowModal(true)}
-    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition"
-  >
-    <FaPlusCircle className="text-xl" />
-    Nuevo ingreso
-  </button>
-</div>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Ingresos</h1>
+        <button
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition"
+        >
+          <FaPlusCircle className="text-xl" />
+          Nuevo ingreso
+        </button>
+      </div>
+
+      {/* Mensaje arriba del formulario */}
+      <Message
+        isOpen={showMessage}
+        onClose={() => setShowMessage(false)}
+        message={message}
+        type={typeMessage}
+      />
 
 
       <div className="bg-white p-4 rounded-xl shadow mb-6">
-  <h2 className="text-xl font-semibold text-gray-700">Total de ingresos</h2>
+        <h2 className="text-xl font-semibold text-gray-700">Total de ingresos</h2>
 
-  <div className="flex flex-col sm:flex-row sm:items-center sm:gap-x-4 gap-y-3 mt-2">
-    <p className="text-3xl font-bold text-green-600">${total.toFixed(2)}</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-x-4 gap-y-3 mt-2">
+          <p className="text-3xl font-bold text-green-600">${total.toFixed(2)}</p>
 
-    <input
-      type="number"
-      name="ganancia"
-      value={gananciaPorcentaje}
-      onChange={(e) => setGananciaPorcentaje(Number(e.target.value))}
-      className="w-full sm:w-32 border border-gray-300 rounded px-3 py-2"
-      placeholder="Ganancia %"
-    />
+          <input
+            type="number"
+            name="ganancia"
+            value={gananciaPorcentaje}
+            onChange={(e) => setGananciaPorcentaje(Number(e.target.value))}
+            className="w-full sm:w-32 border border-gray-300 rounded px-3 py-2"
+            placeholder="Ganancia %"
+          />
 
-    <h3 className="text-gray-700">
-      Costo estimado: ${costo.toFixed(2)}
-    </h3>
+          <h3 className="text-gray-700">
+            Costo estimado: ${costo.toFixed(2)}
+          </h3>
 
-    <h3 className="text-gray-700 sm:ml-4">
-      Ganancia absoluta: ${gananciaAbsoluta.toFixed(2)}
-    </h3>
-  </div>
-</div>
+          <h3 className="text-gray-700 sm:ml-4">
+            Ganancia absoluta: ${gananciaAbsoluta.toFixed(2)}
+          </h3>
+        </div>
+      </div>
 
 
       <div className="bg-white p-4 rounded-xl shadow">
