@@ -93,9 +93,9 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* Encabezado */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">Dashboard</h1>
-        <div className="flex space-x-4">
+      <div className="flex justify-between items-center mb-6">
+<h1 className="hidden sm:block text-3xl font-bold mb-4 text-gray-800">Dashboard</h1>
+        <div className="flex space-x-4 items-center gap"> 
           {buttons.slice(-2).map((btn) => (
             <button
               key={btn.label}
@@ -110,22 +110,23 @@ export default function Dashboard() {
       </div>
 
       {/* Botones principales: solo si la caja está abierta */}
-      {stateCajas && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          {buttons.slice(0, 4).map((btn) => (
-            <button
-              key={btn.label}
-              onClick={() => setComponenteActivo(btn.label)}
-              className={`rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center transition-transform hover:scale-105 ${btn.color}`}
-            >
-              {btn.icon}
-              <span className="text-white mt-3 text-xl font-semibold">
-                {btn.label}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
+{stateCajas && (
+  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+    {buttons.slice(0, 4).map((btn) => (
+      <button
+        key={btn.label}
+        onClick={() => setComponenteActivo(btn.label)}
+        className={`rounded-xl sm:rounded-2xl shadow-md sm:shadow-lg p-4 sm:p-6 flex flex-col items-center justify-center transition-transform hover:scale-105 ${btn.color}`}
+      >
+        {btn.icon}
+        <span className="text-white mt-2 sm:mt-3 text-base sm:text-xl font-semibold text-center">
+          {btn.label}
+        </span>
+      </button>
+    ))}
+  </div>
+)}
+
 
       {/* Componente dinámico */}
       <div className="mt-6">{renderComponenteActivo()}</div>

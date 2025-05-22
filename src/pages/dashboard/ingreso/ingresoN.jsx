@@ -123,28 +123,30 @@ export default function Ingreso() {
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow mb-6">
-        <h2 className="text-xl font-semibold text-gray-700">Total de ingresos</h2>
-        <div className="flex items-center gap-x-4 mt-2">
-          <p className="text-3xl font-bold text-green-600">${total.toFixed(2)}</p>
+  <h2 className="text-xl font-semibold text-gray-700">Total de ingresos</h2>
 
-          <input
-            type="number"
-            name="ganancia"
-            value={gananciaPorcentaje}
-            onChange={(e) => setGananciaPorcentaje(Number(e.target.value))}
-            className="w-32 border border-gray-300 rounded px-3 py-2"
-            placeholder="Ganancia %"
-          />
+  <div className="flex flex-col sm:flex-row sm:items-center sm:gap-x-4 gap-y-3 mt-2">
+    <p className="text-3xl font-bold text-green-600">${total.toFixed(2)}</p>
 
-          <h3 className="text-gray-700">
-            Costo estimado: ${costo.toFixed(2)}
-          </h3>
+    <input
+      type="number"
+      name="ganancia"
+      value={gananciaPorcentaje}
+      onChange={(e) => setGananciaPorcentaje(Number(e.target.value))}
+      className="w-full sm:w-32 border border-gray-300 rounded px-3 py-2"
+      placeholder="Ganancia %"
+    />
 
-          <h3 className="text-gray-700 ml-4">
-            Ganancia absoluta: ${gananciaAbsoluta.toFixed(2)}
-          </h3>
-        </div>
-      </div>
+    <h3 className="text-gray-700">
+      Costo estimado: ${costo.toFixed(2)}
+    </h3>
+
+    <h3 className="text-gray-700 sm:ml-4">
+      Ganancia absoluta: ${gananciaAbsoluta.toFixed(2)}
+    </h3>
+  </div>
+</div>
+
 
       <div className="bg-white p-4 rounded-xl shadow">
         <h2 className="text-xl font-semibold text-gray-700 mb-4">Lista de ingresos</h2>
