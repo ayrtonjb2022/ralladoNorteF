@@ -1,4 +1,3 @@
-// Mismo import que tú usaste
 import { useState, useEffect } from "react";
 import {
   FaCashRegister,
@@ -7,6 +6,8 @@ import {
   FaChartBar,
   FaUser,
   FaCog,
+  FaBars,
+  FaTimes,
   FaSpinner,
 } from "react-icons/fa";
 import { format } from "@formkit/tempo";
@@ -23,6 +24,7 @@ export default function Dashboard() {
   const [componenteActivo, setComponenteActivo] = useState("Caja");
   const [loading, setLoading] = useState(true);
   const [stateCajas, setStateCajas] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const buttons = [
     { label: "Caja", icon: <FaCashRegister />, color: "bg-blue-500" },
@@ -68,9 +70,11 @@ export default function Dashboard() {
       case "Perfil":
         return <UserProfile />;
       default:
-        return null;
+        return <Caja/>;
     }
   };
+
+  
 
   if (loading) {
     return (
@@ -83,50 +87,69 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-white px-6 py-4">
-      {/* Encabezado */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="hidden sm:block text-3xl font-bold text-gray-800">
-          Dashboard
-        </h1>
-        <div className="flex gap-4">
-          {buttons.slice(-2).map((btn) => (
-            <button
-              key={btn.label}
-              onClick={() => setComponenteActivo(btn.label)}
-              className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white text-2xl shadow-md hover:scale-110 transition-transform duration-200 ${btn.color}`}
-            >
-              {btn.icon}
-            </button>
-          ))}
+    <div className="flex min-h-screen bg-gradient-to-br from-gray-100 to-white">
+      {/* Botón hamburguesa solo en móvil */}
+      <button
+        className="fixed top-4 left-4 z-50 text-3xl text-gray-700 sm:hidden"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label={sidebarOpen ? "Cerrar menú" : "Abrir menú"}
+      >
+        {sidebarOpen ? <FaTimes /> : <FaBars />}
+      </button>
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed top-0 left-0 h-full bg-white shadow-lg flex flex-col items-center py-6
+          w-64 sm:w-24
+          transform transition-transform duration-300 ease-in-out
+          ${
+            sidebarOpen
+              ? "translate-x-0"
+              : "-translate-x-full sm:translate-x-0"
+          }
+          z-40
+        `}
+      >
+        <img src={logo} alt="Logo" className="w-12 h-12 sm:w-16 sm:h-16 mb-8" />
+        <nav className="flex flex-col gap-6 flex-1">
+          {buttons.map((btn) => {
+            const activo = componenteActivo === btn.label;
+            return (
+              <button
+                key={btn.label}
+                onClick={() => {
+                  setComponenteActivo(btn.label);
+                  setSidebarOpen(false); // cierra sidebar en móvil cuando clickeas
+                }}
+                className={`
+                  flex flex-col items-center justify-center
+                  w-12 h-12 sm:w-14 sm:h-14 rounded-lg
+                  text-white text-2xl
+                  transition-all duration-200
+                  ${activo ? btn.color : "bg-gray-300 hover:bg-gray-400"}
+                  ${activo ? "scale-110 shadow-lg" : "shadow-sm"}
+                `}
+                title={btn.label}
+              >
+                {btn.icon}
+                <span className="sr-only">{btn.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+        <div className="text-gray-400 text-xs mt-auto px-1 select-none hidden sm:block">
+          © 2025 Massibo
         </div>
-      </div>
+      </aside>
 
-      {/* Botones principales */}
-      {stateCajas && (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-          {buttons.slice(0, 4).map((btn) => (
-            <button
-              key={btn.label}
-              onClick={() => setComponenteActivo(btn.label)}
-              className={`p-5 rounded-2xl shadow-md backdrop-blur-sm bg-opacity-80 text-white hover:shadow-lg hover:scale-105 transition-all duration-200 flex flex-col items-center justify-center ${btn.color}`}
-            >
-              <span className="text-3xl mb-2">{btn.icon}</span>
-              <span className="text-lg font-semibold">{btn.label}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Contenido principal */}
+      <main className="flex-1 sm:ml-24 p-6 overflow-auto">
+        {renderComponenteActivo()}
+      </main>
 
-      {/* Separador con logo */}
-      <div className="flex items-center justify-center gap-4 my-6">
-        <div className="flex-1 h-px bg-gray-300" />
-        <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
-        <div className="flex-1 h-px bg-gray-300" />
-      </div>
+      
 
-      {/* Contenido dinámico */}
-      <div className="mt-6">{renderComponenteActivo()}</div>
     </div>
   );
 }
